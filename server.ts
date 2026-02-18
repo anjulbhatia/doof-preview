@@ -3,28 +3,28 @@ import { GoogleGenAI } from "@google/genai";
 import { readFile, writeFile, mkdir, readdir } from "fs/promises";
 import { join } from "path";
 
-// Debug: Check environment
-console.log("Environment check:");
-console.log("  GEMINI_API_KEY exists:", !!process.env.GEMINI_API_KEY);
-console.log("  GEMINI_API_KEY length:", process.env.GEMINI_API_KEY?.length || 0);
-console.log("  Current directory:", process.cwd());
-
 const app = new Hono();
 
-// Initialize Gemini with error handling
-let genAI: GoogleGenAI;
+// Use environment PORT or default to 3000
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
+
+// Initialize Gemini
+let genAI: GoogleGenAI | null = null;
 try {
-  if (!process.env.GEMINI_API_KEY) {
-    throw new Error("GEMINI_API_KEY not found in environment");
+  if (process.env.GEMINI_API_KEY) {
+    genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+    console.log("✓ Gemini ready");
+  } else {
+    console.warn("⚠ No GEMINI_API_KEY - API will return errors");
   }
-  genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-  console.log("✓ Gemini initialized");
 } catch (err) {
-  console.error("✗ Failed to initialize Gemini:", err);
-  process.exit(1);
+  console.error("✗ Gemini init failed:", err);
 }
 
-const STORAGE_DIR = join(process.cwd(), "..", "storage");
+// Storage in /tmp for serverless environments, or local storage dir
+const STORAGE_DIR = process.env.VERCEL 
+  ? join("/tmp", "storage")
+  : join(process.cwd(), "..", "storage");
 
 interface ProjectInstance {
   id: string;
@@ -35,22 +35,18 @@ interface ProjectInstance {
 }
 
 async function generateInatorName(title: string, description: string): Promise<string> {
-  console.log("Generating name for:", title);
+  if (!genAI) {
+    throw new Error("Gemini not initialized - check GEMINI_API_KEY");
+  }
   
   const prompt = `Create a funny -inator name for: ${title}. Description: ${description}. Must end with -inator. Keep it creative and Doofenshmirtz-style.`;
   
-  try {
-    const response = await genAI.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: prompt,
-    });
+  const response = await genAI.models.generateContent({
+    model: "gemini-3-flash-preview",
+    contents: prompt,
+  });
 
-    console.log("Response received:", response.text ? "OK" : "EMPTY");
-    return response.text || "The Generic-inator";
-  } catch (err) {
-    console.error("Gemini API error:", err);
-    throw err;
-  }
+  return response.text || "The Generic-inator";
 }
 
 async function saveInstance(title: string, description: string, result: string): Promise<ProjectInstance> {
@@ -92,35 +88,46 @@ async function loadInstances(): Promise<ProjectInstance[]> {
   }
 }
 
+// Health check
+app.get("/health", (c) => {
+  return c.json({ 
+    status: "ok", 
+    gemini: !!genAI,
+    storage: STORAGE_DIR 
+  });
+});
+
 // Serve index.html
 app.get("/", async (c) => {
-  const html = await readFile(join(process.cwd(), "index.html"), "utf-8");
-  return c.html(html);
+  try {
+    const html = await readFile(join(process.cwd(), "index.html"), "utf-8");
+    return c.html(html);
+  } catch (err) {
+    console.error("Failed to serve index.html:", err);
+    return c.text("Server error", 500);
+  }
 });
 
 app.post("/api/generate", async (c) => {
   try {
-    const body = await c.req.json();
-    console.log("Request body:", body);
+    if (!genAI) {
+      return c.json({ error: "Service unavailable - API key not configured" }, 503);
+    }
     
+    const body = await c.req.json();
     const { title, description } = body;
     
     if (!title?.trim() || !description?.trim()) {
-      console.log("Validation failed: missing fields");
       return c.json({ error: "Required" }, 400);
     }
 
-    console.log("Calling generateInatorName...");
     const result = await generateInatorName(title, description);
-    console.log("Result:", result);
-    
     const instance = await saveInstance(title, description, result);
-    console.log("Instance saved:", instance.id);
 
     return c.json(instance);
   } catch (error) {
-    console.error("Generate endpoint error:", error);
-    return c.json({ error: "Failed", details: String(error) }, 500);
+    console.error("Generate error:", error);
+    return c.json({ error: "Failed", message: String(error) }, 500);
   }
 });
 
@@ -129,12 +136,13 @@ app.get("/api/history", async (c) => {
     const instances = await loadInstances();
     return c.json(instances);
   } catch (error) {
-    console.error(error);
+    console.error("History error:", error);
     return c.json({ error: "Failed" }, 500);
   }
 });
 
-const port = 3000;
-console.log(`🎭 http://localhost:${port}`);
+console.log(`🎭 Server starting on port ${PORT}`);
+console.log(`   Storage: ${STORAGE_DIR}`);
+console.log(`   Gemini: ${genAI ? "✓" : "✗"}`);
 
-export default { port, fetch: app.fetch };
+export default { port: PORT, fetch: app.fetch };
