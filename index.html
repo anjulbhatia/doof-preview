@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>doof</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'hsl(var(--border))',
+                        input: 'hsl(var(--input))',
+                        ring: 'hsl(var(--ring))',
+                        background: 'hsl(var(--background))',
+                        foreground: 'hsl(var(--foreground))',
+                        primary: {
+                            DEFAULT: 'hsl(var(--primary))',
+                            foreground: 'hsl(var(--primary-foreground))',
+                        },
+                        secondary: {
+                            DEFAULT: 'hsl(var(--secondary))',
+                            foreground: 'hsl(var(--secondary-foreground))',
+                        },
+                        muted: {
+                            DEFAULT: 'hsl(var(--muted))',
+                            foreground: 'hsl(var(--muted-foreground))',
+                        },
+                        accent: {
+                            DEFAULT: 'hsl(var(--accent))',
+                            foreground: 'hsl(var(--accent-foreground))',
+                        },
+                        card: {
+                            DEFAULT: 'hsl(var(--card))',
+                            foreground: 'hsl(var(--card-foreground))',
+                        },
+                    },
+                    borderRadius: {
+                        lg: 'var(--radius)',
+                        md: 'calc(var(--radius) - 2px)',
+                        sm: 'calc(var(--radius) - 4px)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --background: 0 0% 100%;
+            --foreground: 240 10% 3.9%;
+            --card: 0 0% 100%;
+            --card-foreground: 240 10% 3.9%;
+            --popover: 0 0% 100%;
+            --popover-foreground: 240 10% 3.9%;
+            --primary: 240 5.9% 10%;
+            --primary-foreground: 0 0% 98%;
+            --secondary: 240 4.8% 95.9%;
+            --secondary-foreground: 240 5.9% 10%;
+            --muted: 240 4.8% 95.9%;
+            --muted-foreground: 240 3.8% 46.1%;
+            --accent: 240 4.8% 95.9%;
+            --accent-foreground: 240 5.9% 10%;
+            --destructive: 0 84.2% 60.2%;
+            --destructive-foreground: 0 0% 98%;
+            --border: 240 5.9% 90%;
+            --input: 240 5.9% 90%;
+            --ring: 240 5.9% 10%;
+            --radius: 0.5rem;
+        }
+        
+        .dark {
+            --background: 240 10% 3.9%;
+            --foreground: 0 0% 98%;
+            --card: 240 10% 3.9%;
+            --card-foreground: 0 0% 98%;
+            --popover: 240 10% 3.9%;
+            --popover-foreground: 0 0% 98%;
+            --primary: 0 0% 98%;
+            --primary-foreground: 240 5.9% 10%;
+            --secondary: 240 3.7% 15.9%;
+            --secondary-foreground: 0 0% 98%;
+            --muted: 240 3.7% 15.9%;
+            --muted-foreground: 240 5% 64.9%;
+            --accent: 240 3.7% 15.9%;
+            --accent-foreground: 0 0% 98%;
+            --destructive: 0 62.8% 30.6%;
+            --destructive-foreground: 0 0% 98%;
+            --border: 240 3.7% 15.9%;
+            --input: 240 3.7% 15.9%;
+            --ring: 240 4.9% 83.9%;
+        }
+        
+        * {
+            border-color: hsl(var(--border));
+        }
+        
+        body {
+            background-color: hsl(var(--background));
+            color: hsl(var(--foreground));
+        }
+        
+        .animate-in {
+            animation: animate-in 0.3s ease-out;
+        }
+        
+        @keyframes animate-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .progress-bar {
+            transition: width 0.1s linear;
+        }
+        
+        /* Markdown styles */
+        .markdown-content p {
+            margin-bottom: 0.75rem;
+        }
+        .markdown-content p:last-child {
+            margin-bottom: 0;
+        }
+        .markdown-content strong {
+            font-weight: 600;
+        }
+        .markdown-content em {
+            font-style: italic;
+        }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+    <!-- Theme Toggle -->
+    <button onclick="toggleTheme()" class="fixed top-4 right-4 z-50 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 w-9 border border-input bg-background">
+        <svg class="h-4 w-4 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        <svg class="h-4 w-4 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+    </button>
+
+    <!-- Main -->
+    <main class="min-h-screen flex items-center justify-center p-2">
+        
+        <!-- Landing -->
+        <div id="landing" class="animate-in w-full max-w-md">
+            <div class="text-center space-y-6">
+                <div class="space-y-2">
+                    <h1 class="text-3xl font-semibold tracking-tight">Doof-inator</h1>
+                    <p class="text-sm text-muted-foreground italic">"A platypus? <span class="font-medium">Perry the Platypus!</span>"</p>
+                </div>
+                <button onclick="showForm()" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-6 py-2">
+                    Start
+                </button>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <div id="form" class="hidden animate-in w-full max-w-md">
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="p-6 space-y-6">
+                    <div class="space-y-2 text-center">
+                        <h2 class="text-xl font-semibold tracking-tight">Create</h2>
+                        <p class="text-sm text-muted-foreground">Generate an evil name for your project.</p>
+                    </div>
+                    
+                    <form id="generator-form" onsubmit="handleSubmit(event)" class="space-y-4">
+                        <div class="space-y-2">
+                            <label for="title" class="text-sm font-medium">Title</label>
+                            <input 
+                                id="title" 
+                                name="title" 
+                                placeholder="Project name" 
+                                required
+                                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label for="description" class="text-sm font-medium">Description</label>
+                            <textarea 
+                                id="description" 
+                                name="description" 
+                                placeholder="What does it do?" 
+                                rows="3"
+                                required
+                                class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
+                            ></textarea>
+                        </div>
+                        
+                        <div class="flex gap-3 pt-2">
+                            <button 
+                                type="submit"
+                                id="submit-btn"
+                                class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 flex-1"
+                            >
+                                <span id="btn-text">Generate</span>
+                                <span id="btn-loading" class="hidden">...</span>
+                            </button>
+                            <button 
+                                type="button"
+                                onclick="showHistory()"
+                                class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
+                            >
+                                History
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading" class="hidden animate-in w-full max-w-sm">
+            <div class="flex flex-col items-center justify-center space-y-6">
+                <img 
+                    src="https://media.tenor.com/DfgXatzfFi0AAAAM/dr-heinz-doofenshmirtz-doctor-heinz-doofenshmirts.gif" 
+                    alt="Dr. Doofenshmirtz" 
+                    class="w-32 h-32 rounded-lg object-cover"
+                >
+                <div class="w-full space-y-2">
+                    <div class="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                        <div id="progress-bar" class="h-full bg-black dark:bg-white progress-bar" style="width: 0%"></div>
+                    </div>
+                    <p class="text-xs text-center text-muted-foreground">Generating evil scheme...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result -->
+        <div id="result" class="hidden animate-in w-full max-w-md">
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="p-6 space-y-6">
+                    <div class="space-y-2 text-center">
+                        <h2 class="text-xl font-semibold tracking-tight">Result</h2>
+                        <p class="text-sm text-muted-foreground">Your evil creation.</p>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <span class="text-muted-foreground text-xs uppercase">Project</span>
+                                <p id="res-title" class="font-medium mt-1"></p>
+                            </div>
+                            <div>
+                                <span class="text-muted-foreground text-xs uppercase">Date</span>
+                                <p id="res-date" class="font-medium mt-1"></p>
+                            </div>
+                        </div>
+                        <div class="rounded-lg bg-muted p-4 markdown-content" id="res-output"></div>
+                    </div>
+                    
+                    <div class="flex gap-3 pt-2">
+                        <button onclick="resetForm()" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 flex-1">
+                            New
+                        </button>
+                        <button onclick="showHistory()" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                            History
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History -->
+        <div id="history" class="hidden animate-in w-full max-w-md">
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="p-6 space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-xl font-semibold tracking-tight">History</h2>
+                            <p class="text-sm text-muted-foreground">Previous creations.</p>
+                        </div>
+                        <button onclick="showForm()" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
+                            Back
+                        </button>
+                    </div>
+                    <div id="history-list" class="space-y-3 max-h-96 overflow-y-auto">
+                        <p class="text-sm text-muted-foreground text-center py-8">Loading...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Theme
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        }
+        
+        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+        
+        // Navigation
+        function show(id) {
+            ['landing', 'form', 'result', 'history', 'loading'].forEach(s => {
+                document.getElementById(s).classList.add('hidden');
+            });
+            document.getElementById(id).classList.remove('hidden');
+        }
+        
+        function showLanding() { show('landing'); }
+        function showForm() { show('form'); document.getElementById('title').focus(); }
+        function showResult() { show('result'); }
+        function showHistory() { show('history'); loadHistory(); }
+        function showLoading() { show('loading'); }
+        
+        // Progress bar animation
+        function animateProgress() {
+            const bar = document.getElementById('progress-bar');
+            let width = 0;
+            const duration = 5000;
+            const interval = 50;
+            const increment = 100 / (duration / interval);
+            
+            bar.style.width = '0%';
+            
+            const timer = setInterval(() => {
+                width += increment;
+                if (width >= 100) {
+                    width = 100;
+                    clearInterval(timer);
+                }
+                bar.style.width = width + '%';
+            }, interval);
+            
+            return timer;
+        }
+        
+        // Form
+        async function handleSubmit(e) {
+            e.preventDefault();
+            const title = document.getElementById('title').value;
+            const desc = document.getElementById('description').value;
+            
+            // Show loading with progress bar
+            showLoading();
+            const progressTimer = animateProgress();
+            
+            try {
+                const res = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, description: desc })
+                });
+                
+                clearInterval(progressTimer);
+                
+                if (!res.ok) throw new Error('Failed');
+                
+                const data = await res.json();
+                document.getElementById('res-title').textContent = data.title;
+                document.getElementById('res-date').textContent = new Date(data.createdAt).toLocaleDateString();
+                
+                // Render markdown
+                document.getElementById('res-output').innerHTML = marked.parse(data.result);
+                
+                showResult();
+            } catch (err) {
+                clearInterval(progressTimer);
+                alert('Failed to generate');
+                showForm();
+            }
+        }
+        
+        function resetForm() {
+            document.getElementById('generator-form').reset();
+            showForm();
+        }
+        
+        // History
+        async function loadHistory() {
+            const list = document.getElementById('history-list');
+            list.innerHTML = '<p class="text-sm text-muted-foreground text-center py-8">Loading...</p>';
+            
+            try {
+                const res = await fetch('/api/history');
+                const items = await res.json();
+                
+                if (items.length === 0) {
+                    list.innerHTML = '<p class="text-sm text-muted-foreground text-center py-8">No items</p>';
+                    return;
+                }
+                
+                list.innerHTML = items.map((item, i) => `
+                    <div class="rounded-lg border bg-background p-4">
+                        <div class="flex items-start gap-3">
+                            <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium">${i + 1}</span>
+                            <div class="flex-1 space-y-1 min-w-0">
+                                <p class="text-sm font-medium leading-none truncate">${item.title}</p>
+                                <p class="text-xs text-muted-foreground">${new Date(item.createdAt).toLocaleDateString()}</p>
+                                <div class="text-sm text-muted-foreground line-clamp-2 mt-2 markdown-content">${marked.parse(item.result)}</div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch {
+                list.innerHTML = '<p class="text-sm text-muted-foreground text-center py-8">Error loading</p>';
+            }
+        }
+        
+        // Auto transition
+        setTimeout(() => {
+            if (!document.getElementById('landing').classList.contains('hidden')) {
+                showForm();
+            }
+        }, 2000);
+    </script>
+</body>
+</html>

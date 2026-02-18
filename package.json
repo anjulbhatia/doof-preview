@@ -1,0 +1,19 @@
+{
+  "name": "doof-inator-web",
+  "version": "1.0.0",
+  "description": "Web interface for Doof-inator using HTMX and Tailwind",
+  "module": "server.ts",
+  "type": "module",
+  "scripts": {
+    "start": "bun server.ts",
+    "dev": "bun --watch server.ts"
+  },
+  "dependencies": {
+    "@google/genai": "^1.41.0",
+    "@google/generative-ai": "^0.24.1",
+    "hono": "^4.11.9"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}
