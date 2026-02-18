@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>doof</title>
+    <link rel="icon" href="./icon.png" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
@@ -88,9 +89,9 @@
             --accent-foreground: 0 0% 98%;
             --destructive: 0 62.8% 30.6%;
             --destructive-foreground: 0 0% 98%;
-            --border: 240 3.7% 15.9%;
-            --input: 240 3.7% 15.9%;
-            --ring: 240 4.9% 83.9%;
+            --border: 140 3.7% 15.9%;
+            --input: 140 3.7% 15.9%;
+            --ring: 140 4.9% 83.9%;
         }
         
         * {
@@ -144,10 +145,11 @@
         <div id="landing" class="animate-in w-full max-w-md">
             <div class="text-center space-y-6">
                 <div class="space-y-2">
+                    <img src="./icon.png" alt="" class="items-center w-32 h-32 mx-auto rounded-full">
                     <h1 class="text-3xl font-semibold tracking-tight">Doof-inator</h1>
-                    <p class="text-sm text-muted-foreground italic">"A platypus? <span class="font-medium">Perry the Platypus!</span>"</p>
+                    <p class="text-2xl text-muted-foreground italic">"A platypus? <span class="font-medium">Perry the Platypus!</span>"</p>
                 </div>
-                <button onclick="showForm()" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-6 py-2">
+                <button onclick="showForm()" class="hidden inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-6 py-2">
                     Start
                 </button>
             </div>
@@ -158,8 +160,13 @@
             <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
                 <div class="p-6 space-y-6">
                     <div class="space-y-2 text-center">
+                        <div class="flex space-y-2 items-center">
+                        <img src="./icon.png" alt="" class="items-center w-24 h-24 mx-auto rounded-full">
+                        <div class="flex flex-col p-2 justify-left text-left">
                         <h2 class="text-xl font-semibold tracking-tight">Create</h2>
                         <p class="text-sm text-muted-foreground">Generate an evil name for your project.</p>
+                        </div>
+                        </div>
                     </div>
                     
                     <form id="generator-form" onsubmit="handleSubmit(event)" class="space-y-4">
@@ -226,7 +233,7 @@
         </div>
 
         <!-- Result -->
-        <div id="result" class="hidden animate-in w-full max-w-md">
+        <div id="result" class="hidden animate-in w-full max-w-xl">
             <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
                 <div class="p-6 space-y-6">
                     <div class="space-y-2 text-center">
@@ -245,7 +252,7 @@
                                 <p id="res-date" class="font-medium mt-1"></p>
                             </div>
                         </div>
-                        <div class="rounded-lg bg-muted p-4 markdown-content" id="res-output"></div>
+                        <div class="rounded-lg bg-muted p-4 markdown-content max-h-lg overflow-y-auto" id="res-output"></div>
                     </div>
                     
                     <div class="flex gap-3 pt-2">

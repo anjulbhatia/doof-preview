@@ -1,9 +1,12 @@
 import { Hono } from "hono";
+import { serveStatic } from '@hono/node-server/serve-static'
 import { GoogleGenAI } from "@google/genai";
 import { readFile, writeFile, mkdir, readdir } from "fs/promises";
 import { join } from "path";
 
 const app = new Hono();
+
+app.use('/*', serveStatic({ root: './public' }))
 
 // Use environment PORT or default to 3000
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
